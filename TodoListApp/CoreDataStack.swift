@@ -22,7 +22,6 @@ final class CoreDataStack {
     }
 
     private init() {
-        // Replace "YourModelName" with your actual .xcdatamodeld filename
         persistentContainer = NSPersistentContainer(name: "CoreData")
 
         persistentContainer.loadPersistentStores { storeDescription, error in
@@ -32,7 +31,7 @@ final class CoreDataStack {
         }
     }
 
-    // Optional: Save if there are changes
+    // Opt.: Save if there are changes
     func saveContext() {
         let context = persistentContainer.viewContext
         if context.hasChanges {
