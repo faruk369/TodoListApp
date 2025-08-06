@@ -30,9 +30,9 @@ protocol TaskListViewProtocol: AnyObject {
 protocol TaskListInteractorInputProtocol: AnyObject {
     var presenter: TaskListInteractorOutputProtocol? { get set }
     
-    func fetchTasksFromDatabase() -> [TaskObject]
+
+    func fetchLocalTasks() -> [TaskObject]
     func fetchTasks()
-//    func didFetchTasks(_ tasks: [TaskObject])
     func updateTaskCompletion(_ task: TaskObject)
     func updateExistingTask(_ task: TaskObject)
     func deleteTask(_ task: TaskObject)

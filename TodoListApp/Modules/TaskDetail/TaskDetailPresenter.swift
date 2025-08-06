@@ -19,16 +19,17 @@ class TaskDetailPresenter: TaskDetailPresenterProtocol {
     }
 
     func didTapSave(title: String, description: String) {
-        guard !title.isEmpty else { return }
+            guard !title.isEmpty else { return }
 
-        if let existingTask = task {
-            existingTask.name = title
-            existingTask.descriptionText = description.isEmpty ? "No description" : description
-            interactor?.updateExistingTask(from: existingTask)
-        } else {
-            interactor?.createTask(title: title, description: description)
+            if let existingTask = task {
+                existingTask.name = title
+                existingTask.descriptionText = description
+                existingTask.isEditedLocally = true
+                interactor?.updateExistingTask(from: existingTask)
+            } else {
+                interactor?.createTask(title: title, description: description)
+            }
+
+            router?.dismiss(view: view)
         }
-
-        router?.dismiss(view: view)
-    }
 }

@@ -25,7 +25,11 @@ protocol TaskDetailPresenterProtocol: AnyObject {
 
 protocol TaskDetailInteractorInputProtocol: AnyObject {
     func createTask(title: String, description: String)
+//func updateExistingTask(from entity: TaskObject)
+//    func updateExistingTask(_ task: TaskObject, title: String, description: String)
     func updateExistingTask(from entity: TaskObject)
+    
+    
 }
 
 protocol TaskDetailInteractorOutputProtocol: AnyObject{

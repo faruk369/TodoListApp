@@ -32,22 +32,19 @@ class TaskListPresenter: TaskListPresenterProtocol, TaskListInteractorOutputProt
         interactor?.updateTaskCompletion(updatedTask)
     }
 
-    func didFetchTasks(_ tasks: [TaskObject]) {
-        self.tasks = tasks
-        view?.displayTasks(tasks)
-        
-    }
-  
     func loadInitialTasks() {
-        let localTasks = interactor?.fetchTasksFromDatabase() ?? []
-
-        if localTasks.isEmpty {
-            interactor?.fetchTasks() // API fetch async
-        } else {
-            tasks = localTasks
+            if let localTasks = interactor?.fetchLocalTasks(), !localTasks.isEmpty {
+                tasks = localTasks
+                view?.displayTasks(tasks)
+            } else {
+                interactor?.fetchTasks()
+            }
+        }
+        
+        func didFetchTasks(_ tasks: [TaskObject]) {
+            self.tasks = tasks
             view?.displayTasks(tasks)
         }
-    }
     
     func didUpdateTask(_ task: TaskObject) {
         tasks = tasks.map { $0.id == task.id ? task : $0 }

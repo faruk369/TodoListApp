@@ -46,6 +46,7 @@ class TaskTableViewCell: UITableViewCell {
 
     func configure(with task: TaskObject) {
         currentTask = task
+        titleLabel.text = task.name
         descriptionLabel.text = task.descriptionText ?? "No description"
         dateLabel.text = format(date: task.dateCreated)
 

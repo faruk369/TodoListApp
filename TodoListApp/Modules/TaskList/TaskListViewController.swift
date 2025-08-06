@@ -14,8 +14,6 @@ class TaskListViewController: UIViewController, TaskListViewProtocol {
     var tasks: [TaskObject] = []
     var filteredTasks: [TaskObject] = []
     
-    
-    
     let tableView = UITableView()
     let searchTextField = UITextField()
     let bottomBar = UIView()
@@ -31,8 +29,6 @@ class TaskListViewController: UIViewController, TaskListViewProtocol {
         setUpTableView()
         setupBottomBar()
         setUpConstraints()
-        clearAllTasks()
-//        presenter?.fetchTasks()
         presenter?.loadInitialTasks()
     }
 
@@ -50,22 +46,7 @@ class TaskListViewController: UIViewController, TaskListViewProtocol {
        tableView.reloadData()
         taskCountLabel.text = "\(tasks.count) задач"
     }
-    
-    //clear Tasks before fetching
-    func clearAllTasks() {
-        let context = CoreDataStack.shared.context
-        let fetchRequest: NSFetchRequest<NSFetchRequestResult> = TaskObject.fetchRequest()
-        let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
-        
-        do {
-            try context.execute(deleteRequest)
-            try context.save()
-        } catch {
-            print("Failed to clear existing tasks: \(error)")
-        }
-    }
-    
- 
+     
    
 }
 

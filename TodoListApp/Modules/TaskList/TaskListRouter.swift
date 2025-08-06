@@ -58,17 +58,17 @@ class TaskListRouter: TaskListRouterProtocol {
         }
     }
     
-    func fetchTasksFromDatabase() -> [TaskObject] {
-        let context = CoreDataStack.shared.context
-        let request: NSFetchRequest<TaskObject> = TaskObject.fetchRequest()
-
-        do {
-            return try context.fetch(request)
-        } catch {
-            print("Fetch error: \(error)")
-            return []
-        }
-    }
+//    func fetchTasksFromDatabase() -> [TaskObject] {
+//        let context = CoreDataStack.shared.context
+//        let request: NSFetchRequest<TaskObject> = TaskObject.fetchRequest()
+//
+//        do {
+//            return try context.fetch(request)
+//        } catch {
+//            print("Fetch error: \(error)")
+//            return []
+//        }
+//    }
     
     
     func updateTaskObject(_ dto: TaskObject) {
