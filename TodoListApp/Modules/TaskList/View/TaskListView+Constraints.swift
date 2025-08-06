@@ -66,17 +66,18 @@ extension TaskTableViewCell{
 extension TaskDetailViewController{
     func setupConstraints() {
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0),
-            titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
-            titleLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            titleTextField.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0),
+            titleTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
+            titleTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
 
-            dateLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 4),
-            dateLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
-            dateLabel.trailingAnchor.constraint(equalTo: titleLabel.trailingAnchor),
+            dateLabel.topAnchor.constraint(equalTo: titleTextField.bottomAnchor, constant: 4),
+            dateLabel.leadingAnchor.constraint(equalTo: titleTextField.leadingAnchor),
+            dateLabel.trailingAnchor.constraint(equalTo: titleTextField.trailingAnchor),
 
-            descriptionLabel.topAnchor.constraint(equalTo: dateLabel.bottomAnchor, constant: 16),
-            descriptionLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
-            descriptionLabel.trailingAnchor.constraint(equalTo: titleLabel.trailingAnchor),
+            descriptionTextView.topAnchor.constraint(equalTo: dateLabel.bottomAnchor, constant: 16),
+            descriptionTextView.leadingAnchor.constraint(equalTo: titleTextField.leadingAnchor),
+            descriptionTextView.trailingAnchor.constraint(equalTo: titleTextField.trailingAnchor),
+            descriptionTextView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20)
         ])
     }
 }

@@ -13,36 +13,42 @@ protocol TaskListPresenterProtocol: AnyObject {
     var interactor: TaskListInteractorInputProtocol? { get set }
     var router: TaskListRouterProtocol? { get set }
 
-    func viewDidLoad()
+    func loadInitialTasks()
     func fetchTasks()
-    func toggleTaskCompletion(_ task: TaskEntity)
-    func didSelectTask(_ task: TaskEntity)
+    func toggleTaskCompletion(_ task: TaskObject)
+    func didSelectTask(_ task: TaskObject)
     func didLongPressEdit(at indexPath: IndexPath)
         func didLongPressDelete(at indexPath: IndexPath)
+   func didTapAddNewTask()
 }
 
 protocol TaskListViewProtocol: AnyObject {
     var presenter: TaskListPresenterProtocol? { get set }
-    func displayTasks(_ tasks: [TaskEntity])
+    func displayTasks(_ tasks: [TaskObject])
 }
 
 protocol TaskListInteractorInputProtocol: AnyObject {
     var presenter: TaskListInteractorOutputProtocol? { get set }
+    
+    func fetchTasksFromDatabase() -> [TaskObject]
     func fetchTasks()
-    func updateTaskCompletion(_ task: TaskEntity)
-    func deleteTask(_ task: TaskEntity)
+//    func didFetchTasks(_ tasks: [TaskObject])
+    func updateTaskCompletion(_ task: TaskObject)
+    func updateExistingTask(_ task: TaskObject)
+    func deleteTask(_ task: TaskObject)
 }
 
 protocol TaskListInteractorOutputProtocol: AnyObject {
-    func didFetchTasks(_ tasks: [TaskEntity])
-    func didUpdateTask(_ task: TaskEntity)
+    func didFetchTasks(_ tasks: [TaskObject])
+    func didUpdateTask(_ task: TaskObject)
 }
 
 protocol TaskListRouterProtocol: AnyObject {
     static func createModule() -> UIViewController
-    func navigateToDetail(from view: TaskListViewProtocol, with task: TaskEntity)
+  func navigateToDetail(from view: TaskListViewProtocol, with task: TaskObject)
+    func presentCreateTask(from: TaskListViewProtocol)
 }
 
 protocol TaskTableViewCellDelegate: AnyObject {
-    func didToggleCompletion(for task: TaskEntity)
+    func didToggleCompletion(for task: TaskObject)
 }

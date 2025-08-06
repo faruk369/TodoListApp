@@ -8,7 +8,7 @@
 import UIKit
 
 class TaskDetailRouter: TaskDetailRouterProtocol {
-    static func createModule(with task: TaskEntity) -> UIViewController {
+    static func createModule(with task: TaskObject?) -> UIViewController {
         let view = TaskDetailViewController()
         let presenter = TaskDetailPresenter()
         let interactor = TaskDetailInteractor()
@@ -21,5 +21,11 @@ class TaskDetailRouter: TaskDetailRouterProtocol {
         presenter.task = task
 
         return view
+    }
+
+    func dismiss(view: TaskDetailViewProtocol?) {
+        if let vc = view as? UIViewController {
+            vc.navigationController?.popViewController(animated: true)
+        }
     }
 }

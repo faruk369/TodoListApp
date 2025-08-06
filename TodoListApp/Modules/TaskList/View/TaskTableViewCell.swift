@@ -14,7 +14,7 @@ class TaskTableViewCell: UITableViewCell {
     let dateLabel = UILabel()
 
     weak var delegate: TaskTableViewCellDelegate?
-    private var currentTask: TaskEntity?
+    private var currentTask: TaskObject?
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -44,15 +44,16 @@ class TaskTableViewCell: UITableViewCell {
         dateLabel.font = UIFont.systemFont(ofSize: 12)
     }
 
-    func configure(with task: TaskEntity) {
+    func configure(with task: TaskObject) {
         currentTask = task
-        descriptionLabel.text = task.description
+        descriptionLabel.text = task.descriptionText ?? "No description"
         dateLabel.text = format(date: task.dateCreated)
 
         if task.isCompleted {
             completionButton.setImage(UIImage(systemName: "checkmark.circle.fill"), for: .normal)
-            let attributed = NSMutableAttributedString(string: task.name)
-            attributed.addAttribute(.strikethroughStyle, value: NSUnderlineStyle.single.rawValue, range: NSRange(location: 0, length: task.name.count))
+            let name = task.name ?? ""
+            let attributed = NSMutableAttributedString(string: name)
+            attributed.addAttribute(.strikethroughStyle, value: NSUnderlineStyle.single.rawValue, range: NSRange(location: 0, length: name.count))
             titleLabel.attributedText = attributed
         } else {
             completionButton.setImage(UIImage(systemName: "circle"), for: .normal)
@@ -66,7 +67,8 @@ class TaskTableViewCell: UITableViewCell {
         delegate?.didToggleCompletion(for: task)
     }
 
-    private func format(date: Date) -> String {
+    private func format(date: Date?) -> String {
+        guard let date = date else { return "No date" }
         let formatter = DateFormatter()
         formatter.dateStyle = .short
         return formatter.string(from: date)

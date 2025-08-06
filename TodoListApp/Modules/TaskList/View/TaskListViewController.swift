@@ -6,31 +6,36 @@
 //
 
 import UIKit
+import CoreData
+
 
 class TaskListViewController: UIViewController, TaskListViewProtocol {
     var presenter: TaskListPresenterProtocol?
-    var tasks: [TaskEntity] = []
-    var filteredTasks: [TaskEntity] = []
+    var tasks: [TaskObject] = []
+    var filteredTasks: [TaskObject] = []
+    
+    
     
     let tableView = UITableView()
     let searchTextField = UITextField()
     let bottomBar = UIView()
     let taskCountLabel = UILabel()
     let pencilImageView = UIImageView(image: UIImage(systemName: "square.and.pencil"))
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         title = "Задачи"
-        
+
         setupSearchBar()
         setUpTableView()
         setupBottomBar()
         setUpConstraints()
-        presenter?.fetchTasks()
+        clearAllTasks()
+//        presenter?.fetchTasks()
+        presenter?.loadInitialTasks()
     }
 
-    
     func setUpTableView() {
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.delegate = self
@@ -39,50 +44,69 @@ class TaskListViewController: UIViewController, TaskListViewProtocol {
         view.addSubview(tableView)
     }
 
-    func displayTasks(_ tasks: [TaskEntity]) {
+    func displayTasks(_ tasks: [TaskObject]) {
         self.tasks = tasks
         self.filteredTasks = tasks
-        tableView.reloadData()
+       tableView.reloadData()
         taskCountLabel.text = "\(tasks.count) задач"
     }
-
+    
+    //clear Tasks before fetching
+    func clearAllTasks() {
+        let context = CoreDataStack.shared.context
+        let fetchRequest: NSFetchRequest<NSFetchRequestResult> = TaskObject.fetchRequest()
+        let deleteRequest = NSBatchDeleteRequest(fetchRequest: fetchRequest)
+        
+        do {
+            try context.execute(deleteRequest)
+            try context.save()
+        } catch {
+            print("Failed to clear existing tasks: \(error)")
+        }
+    }
+    
+ 
+   
 }
 
 extension TaskListViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return filteredTasks.count
     }
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "TaskCell", for: indexPath) as? TaskTableViewCell else {
             return UITableViewCell()
         }
         let task = filteredTasks[indexPath.row]
-              cell.configure(with: task)
-              cell.delegate = self
-              return cell
+        cell.configure(with: task)
+        cell.delegate = self
+        return cell
     }
+
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let task = filteredTasks[indexPath.row]
-                presenter?.didSelectTask(task)
+        
+        presenter?.didSelectTask(task)
     }
-    
-    // MARK: - Context Menu for Long Press
+
     func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath,
                    point: CGPoint) -> UIContextMenuConfiguration? {
-        
+
         return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
             let editAction = UIAction(title: "Edit", image: UIImage(systemName: "pencil")) { _ in
                 self.handleEdit(at: indexPath)
             }
-            
+
             let deleteAction = UIAction(title: "Delete", image: UIImage(systemName: "trash"),
                                         attributes: .destructive) { _ in
                 self.handleDelete(at: indexPath)
             }
-            
+
             return UIMenu(title: "", children: [editAction, deleteAction])
         }
     }
+
     func handleEdit(at indexPath: IndexPath) {
         presenter?.didLongPressEdit(at: indexPath)
     }
@@ -90,8 +114,8 @@ extension TaskListViewController: UITableViewDelegate, UITableViewDataSource {
     func handleDelete(at indexPath: IndexPath) {
         presenter?.didLongPressDelete(at: indexPath)
     }
-    
 }
+
 extension TaskListViewController {
     func setupSearchBar() {
         searchTextField.placeholder = "Search"
@@ -99,8 +123,7 @@ extension TaskListViewController {
         searchTextField.addTarget(self, action: #selector(searchTextChanged), for: .editingChanged)
         searchTextField.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(searchTextField)
-        
-        //magnifying glass
+
         let leftContainerView = UIView(frame: CGRect(x: 0, y: 0, width: 30, height: 20))
         let magnifyingImageView = UIImageView(image: UIImage(systemName: "magnifyingglass"))
         magnifyingImageView.tintColor = .gray
@@ -111,7 +134,6 @@ extension TaskListViewController {
         searchTextField.leftView = leftContainerView
         searchTextField.leftViewMode = .always
 
-        // Right view (mic)
         let rightContainerView = UIView(frame: CGRect(x: 0, y: 0, width: 30, height: 20))
         let micImageView = UIImageView(image: UIImage(systemName: "mic"))
         micImageView.tintColor = .gray
@@ -121,7 +143,6 @@ extension TaskListViewController {
         rightContainerView.addSubview(micImageView)
         searchTextField.rightView = rightContainerView
         searchTextField.rightViewMode = .always
-        
     }
 
     @objc func searchTextChanged() {
@@ -130,7 +151,8 @@ extension TaskListViewController {
             filteredTasks = tasks
         } else {
             filteredTasks = tasks.filter {
-                $0.name.lowercased().contains(text) || $0.description.lowercased().contains(text)
+                ($0.name ?? "").lowercased().contains(text) ||
+                            ($0.descriptionText ?? "").lowercased().contains(text)
             }
         }
         tableView.reloadData()
@@ -147,21 +169,35 @@ extension TaskListViewController {
         taskCountLabel.translatesAutoresizingMaskIntoConstraints = false
 
         pencilImageView.translatesAutoresizingMaskIntoConstraints = false
-            pencilImageView.tintColor = .gray
-            pencilImageView.contentMode = .scaleAspectFit
-        
+        pencilImageView.tintColor = .gray
+        pencilImageView.contentMode = .scaleAspectFit
+
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(editTapped))
+        pencilImageView.addGestureRecognizer(tapGesture)
+        pencilImageView.isUserInteractionEnabled = true
+
         view.addSubview(bottomBar)
         bottomBar.addSubview(taskCountLabel)
         bottomBar.addSubview(pencilImageView)
     }
 
     @objc func editTapped() {
-        print("Edit tapped.")
+        presenter?.didTapAddNewTask()
     }
 }
 
 extension TaskListViewController: TaskTableViewCellDelegate {
-    func didToggleCompletion(for task: TaskEntity) {
+    func didToggleCompletion(for task: TaskObject) {
         presenter?.toggleTaskCompletion(task)
+    }
+}
+
+extension TaskListViewController: TaskDetailViewToListDelegate {
+    func refreshCellAfterEdit(_ updatedTask: TaskObject) {
+        if let index = tasks.firstIndex(where: { $0.id == updatedTask.id }) {
+            tasks[index] = updatedTask
+            let indexPath = IndexPath(row: index, section: 0)
+            tableView.reloadRows(at: [indexPath], with: .automatic)
+        }
     }
 }

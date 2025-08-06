@@ -10,47 +10,72 @@ import UIKit
 class TaskDetailViewController: UIViewController, TaskDetailViewProtocol {
     var presenter: TaskDetailPresenterProtocol?
     
-    let titleLabel = UILabel()
-   let descriptionLabel = UILabel()
+    
+    weak var delegate: TaskDetailViewToListDelegate?
+    
+    let titleTextField = UITextField()
+    let descriptionTextView = UITextView()
     let dateLabel = UILabel()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
-        // title = "Task Detail"
         setupViews()
         setupConstraints()
+        
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            barButtonSystemItem: .save,
+            target: self,
+            action: #selector(saveTapped)
+        )
+        
         presenter?.viewDidLoad()
+    }
+
+    @objc func saveTapped() {
+        presenter?.didTapSave(
+            title: titleTextField.text ?? "",
+            description: descriptionTextView.text ?? ""
+        )
+        
     }
     
     private func setupViews() {
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        titleTextField.translatesAutoresizingMaskIntoConstraints = false
         dateLabel.translatesAutoresizingMaskIntoConstraints = false
-        descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
+        descriptionTextView.translatesAutoresizingMaskIntoConstraints = false
 
-        titleLabel.font = .boldSystemFont(ofSize: 26)
-        titleLabel.numberOfLines = 0
-        //titleLabel.textAlignment = .center
+        titleTextField.font = .boldSystemFont(ofSize: 26)
+        
 
         dateLabel.font = .systemFont(ofSize: 14)
         dateLabel.textColor = .secondaryLabel
         dateLabel.numberOfLines = 1
 
-        descriptionLabel.font = .systemFont(ofSize: 17)
-        descriptionLabel.numberOfLines = 0
+        descriptionTextView.font = .systemFont(ofSize: 17)
+        
 
-        view.addSubview(titleLabel)
+        view.addSubview(titleTextField)
         view.addSubview(dateLabel)
-        view.addSubview(descriptionLabel)
+        view.addSubview(descriptionTextView)
     }
     
-    func showTaskDetails(_ task: TaskEntity) {
-        titleLabel.text = task.name
-        descriptionLabel.text = task.description
+    //Method Overloading- where I can have two methods with the same name but different inputs
+    
+    //  single task
+    func showTaskDetails(_ task: TaskObject) {
+        titleTextField.text = task.name
+        descriptionTextView.text = task.descriptionText ?? "No description"
         
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
-        dateLabel.text = "Created on: \(formatter.string(from: task.dateCreated))"
+        dateLabel.text = "Created on: \(formatter.string(from: task.dateCreated!))"
+        dateLabel.textColor = .black
     }
     
+    // multiple tasks
+    func showTaskDetails(_ tasks: [TaskObject]) {
+        
+        print("Showing task details: \(tasks.count) tasks")
+    }
 }
