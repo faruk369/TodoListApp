@@ -15,14 +15,16 @@ class TaskDetailInteractor: TaskDetailInteractorInputProtocol {
     }
     
     func createTask(title: String, description: String) {
-            let context = CoreDataStack.shared.context
-            let newTask = TaskObject(context: context)
-            newTask.id = Int64(Date().timeIntervalSince1970)
-            newTask.name = title
-            newTask.descriptionText = description
-            newTask.dateCreated = Date()
-            newTask.isEditedLocally = true
-            CoreDataStack.shared.saveContext()
-        }
+        let context = CoreDataStack.shared.context
+        let newTask = TaskObject(context: context)
+        newTask.id = Int64(Date().timeIntervalSince1970)
+        newTask.name = title
+        newTask.descriptionText = description
+        newTask.isCompleted = false
+        newTask.dateCreated = Date()
+        newTask.isEditedLocally = true
+        
+        CoreDataStack.shared.saveContext()
+    }
 }
 

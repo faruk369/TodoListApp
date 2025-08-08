@@ -9,9 +9,8 @@ import UIKit
 
 class TaskDetailViewController: UIViewController, TaskDetailViewProtocol {
     var presenter: TaskDetailPresenterProtocol?
+    weak var delegate: TaskDetailToTaskListDelegate?
     
-    
-    weak var delegate: TaskDetailViewToListDelegate?
     
     let titleTextField = UITextField()
     let descriptionTextView = UITextView()

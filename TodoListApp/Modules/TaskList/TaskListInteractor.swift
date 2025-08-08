@@ -21,8 +21,9 @@ class TaskListInteractor: TaskListInteractorInputProtocol {
             switch result {
             case .success(let remoteTasks):
                 self?.syncTasks(remoteTasks)
-            case .failure(let error):
-                print("API Error: \(error.localizedDescription)")
+            case .failure:
+                // Don't show error if we have local tasks
+                break
             }
         }
     }
@@ -40,25 +41,51 @@ class TaskListInteractor: TaskListInteractorInputProtocol {
         }
     }
     
+    private func removeDuplicates() {
+        let context = CoreDataStack.shared.context
+        let request: NSFetchRequest<TaskObject> = TaskObject.fetchRequest()
+        
+        do {
+            let allTasks = try context.fetch(request)
+            var uniqueTasks = [Int64: TaskObject]()
+            
+            for task in allTasks {
+                if let existing = uniqueTasks[task.id] {
+                    context.delete(task) // Delete duplicate
+                } else {
+                    uniqueTasks[task.id] = task
+                }
+            }
+            
+            if allTasks.count != uniqueTasks.count {
+                try context.save()
+            }
+        } catch {
+            print("Duplicate removal failed: \(error)")
+        }
+    }
+
+    
+    // Update syncTasks method to prevent duplicates
     private func syncTasks(_ remoteTasks: [TaskEntity]) {
         let context = CoreDataStack.shared.context
         context.perform {
-            // Get existing tasks
+            // Remove duplicates first
+            self.removeDuplicates()
+            
+            // Existing sync logic
             let localTasks = self.fetchLocalTasks()
             let localTaskDict = Dictionary(uniqueKeysWithValues: localTasks.map { (Int($0.id), $0) })
             
-            // Process API todos
             for remoteTask in remoteTasks {
                 let taskId = remoteTask.id
                 
                 if let existingTask = localTaskDict[taskId] {
-                    // Only update if not locally modified
                     if !existingTask.isEditedLocally {
                         existingTask.name = remoteTask.name
                         existingTask.isCompleted = remoteTask.isCompleted
                     }
                 } else {
-                    // Create new task
                     let newTask = TaskObject(context: context)
                     newTask.id = Int64(remoteTask.id)
                     newTask.name = remoteTask.name
@@ -71,8 +98,9 @@ class TaskListInteractor: TaskListInteractorInputProtocol {
             // Save changes
             do {
                 try context.save()
+                let updatedTasks = self.fetchLocalTasks()
                 DispatchQueue.main.async {
-                    self.presenter?.didFetchTasks(self.fetchLocalTasks())
+                    self.presenter?.didFetchTasks(updatedTasks)
                 }
             } catch {
                 print("Sync failed: \(error)")
@@ -80,36 +108,15 @@ class TaskListInteractor: TaskListInteractorInputProtocol {
         }
     }
     
-    func createTask(title: String, description: String) {
-        let context = CoreDataStack.shared.context
-        let newTask = TaskObject(context: context)
-        newTask.name = title
-        newTask.descriptionText = description
-        newTask.isCompleted = false
-        newTask.dateCreated = Date()
-        newTask.id = Int64(Date().timeIntervalSince1970) // Unique ID
+  
 
-        do {
-            try context.save()
-            presenter?.didUpdateTask(newTask)
-        } catch {
-            print("Failed to save new task: \(error)")
-        }
-    }
-
-    func updateExistingTask(_ task: TaskObject) {
-        let context = CoreDataStack.shared.context
-        do {
-            try context.save()
-            presenter?.didUpdateTask(task)
-        } catch {
-            print("Failed to update task: \(error)")
-        }
+    func updateExistingTask(from entity: TaskObject) {
+        CoreDataStack.shared.saveContext()
     }
 
     func updateTaskCompletion(_ task: TaskObject) {
         task.isCompleted.toggle()
-        updateExistingTask(task)
+//        updateExistingTask(taskob)
     }
 
     func deleteTask(_ task: TaskObject) {

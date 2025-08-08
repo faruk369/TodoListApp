@@ -9,7 +9,8 @@ import UIKit
 import CoreData
 
 class TaskListRouter: TaskListRouterProtocol {
-    var presenter:TaskListInteractorInputProtocol?
+    weak var presenter:TaskListPresenter?
+  
     
     static func createModule() -> UIViewController {
         let view = TaskListViewController()
@@ -19,14 +20,35 @@ class TaskListRouter: TaskListRouterProtocol {
 
         view.presenter = presenter
         interactor.presenter = presenter
+        
         return view
     }
 
-    func navigateToDetail(from view: TaskListViewProtocol, with task: TaskObject) {
+//    func navigateToDetail(from view: TaskListViewProtocol, with task: TaskObject?) {
+//        guard let sourceVC = view as? UIViewController else { return }
+//        
+//        let detailVC = TaskDetailRouter.createModule(with: task)
+//        
+//        
+//        if let detailVC = detailVC as? TaskDetailViewController,
+//               let presenter = (sourceVC as? TaskListViewController)?.presenter as? TaskDetailToTaskListDelegate {
+//                detailVC.presenter?.delegate = presenter
+//            }
+//        sourceVC.navigationController?.pushViewController(detailVC, animated: true)
+//    }
+    func navigateToDetail(from view: TaskListViewProtocol, with task: TaskObject?) {
+        guard let sourceVC = view as? UIViewController else { return }
+        
         let detailVC = TaskDetailRouter.createModule(with: task)
-        if let sourceVC = view as? UIViewController {
-            sourceVC.navigationController?.pushViewController(detailVC, animated: true)
+        
+        // Proper delegate setup
+        if let detailVC = detailVC as? TaskDetailViewController,
+           let taskListVC = sourceVC as? TaskListViewController {
+            // Directly assign the presenter as delegate
+            detailVC.presenter?.delegate = taskListVC.presenter as? any TaskDetailToTaskListDelegate
         }
+        
+        sourceVC.navigationController?.pushViewController(detailVC, animated: true)
     }
 
     func presentCreateTask(from view: TaskListViewProtocol) {
@@ -40,7 +62,7 @@ class TaskListRouter: TaskListRouterProtocol {
         let context = CoreDataStack.shared.context
 
         for dto in taskDTOs {
-            // Optional: Check if task with same ID already exists
+            //Check if task with same ID already exists
             let request: NSFetchRequest<TaskObject> = TaskObject.fetchRequest()
             request.predicate = NSPredicate(format: "id == %d", dto.id)
 
@@ -57,19 +79,6 @@ class TaskListRouter: TaskListRouterProtocol {
             print("Failed to save tasks: \(error)")
         }
     }
-    
-//    func fetchTasksFromDatabase() -> [TaskObject] {
-//        let context = CoreDataStack.shared.context
-//        let request: NSFetchRequest<TaskObject> = TaskObject.fetchRequest()
-//
-//        do {
-//            return try context.fetch(request)
-//        } catch {
-//            print("Fetch error: \(error)")
-//            return []
-//        }
-//    }
-    
     
     func updateTaskObject(_ dto: TaskObject) {
         let context = CoreDataStack.shared.context

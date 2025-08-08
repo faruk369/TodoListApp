@@ -18,9 +18,11 @@ protocol TaskDetailPresenterProtocol: AnyObject {
     var interactor: TaskDetailInteractorInputProtocol? { get set }
     var router: TaskDetailRouterProtocol? { get set }
     var task: TaskObject? { get set }
+    var delegate: TaskDetailToTaskListDelegate? { get set }
 
     func viewDidLoad()
     func didTapSave(title: String, description: String)
+    func handleViewWillDisappear()
 }
 
 protocol TaskDetailInteractorInputProtocol: AnyObject {
@@ -41,6 +43,6 @@ protocol TaskDetailRouterProtocol: AnyObject {
     func dismiss(view: TaskDetailViewProtocol?)
 }
 
-protocol TaskDetailViewToListDelegate: AnyObject {
-    func refreshCellAfterEdit(_ updatedTask: TaskObject)
-}
+//protocol TaskDetailViewToListDelegate: AnyObject {
+//    func refreshCellAfterEdit(_ updatedTask: TaskObject)
+//}

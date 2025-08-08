@@ -29,8 +29,13 @@ class TaskListViewController: UIViewController, TaskListViewProtocol {
         setUpTableView()
         setupBottomBar()
         setUpConstraints()
-        presenter?.loadInitialTasks()
+//        presenter?.loadInitialTasks()
+        if let localTasks = presenter?.interactor?.fetchLocalTasks(), !localTasks.isEmpty {
+                displayTasks(localTasks)
+            }
+            presenter?.fetchTasks()
     }
+
 
     func setUpTableView() {
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -42,12 +47,56 @@ class TaskListViewController: UIViewController, TaskListViewProtocol {
 
     func displayTasks(_ tasks: [TaskObject]) {
         self.tasks = tasks
-        self.filteredTasks = tasks
+        applySearchFilter()
        tableView.reloadData()
         taskCountLabel.text = "\(tasks.count) задач"
     }
      
-   
+    func updateTask(_ task: TaskObject, at index: Int) {
+        if let indexInTasks = tasks.firstIndex(where: { $0.id == task.id }) {
+            tasks[indexInTasks] = task
+        }
+        applySearchFilter() // This updates filteredTasks
+        tableView.reloadData()
+    }
+
+//    func insertTask(_ task: TaskObject, at index: Int) {
+//        tasks.insert(task, at: 0)
+//        applySearchFilter() // This updates filteredTasks
+//        tableView.reloadData()
+//        taskCountLabel.text = "\(tasks.count) задач"
+//    }
+    
+    func insertTask(_ task: TaskObject, at index: Int) {
+        // Add to main tasks array
+        tasks.insert(task, at: 0)
+        
+        // Update filtered tasks
+        applySearchFilter()
+        
+        // Insert row at top with animation
+        tableView.performBatchUpdates({
+            tableView.insertRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
+        }, completion: nil)
+        taskCountLabel.text = "\(tasks.count) задач"
+    }
+       
+       private func indexPathForTask(_ task: TaskObject) -> IndexPath? {
+           guard let index = filteredTasks.firstIndex(where: { $0.id == task.id }) else { return nil }
+           return IndexPath(row: index, section: 0)
+       }
+       
+       private func applySearchFilter() {
+           guard let searchText = searchTextField.text?.lowercased(), !searchText.isEmpty else {
+               filteredTasks = tasks
+               return
+           }
+           
+           filteredTasks = tasks.filter {
+               ($0.name ?? "").lowercased().contains(searchText) ||
+               ($0.descriptionText ?? "").lowercased().contains(searchText)
+           }
+       }
 }
 
 extension TaskListViewController: UITableViewDelegate, UITableViewDataSource {
@@ -170,15 +219,5 @@ extension TaskListViewController {
 extension TaskListViewController: TaskTableViewCellDelegate {
     func didToggleCompletion(for task: TaskObject) {
         presenter?.toggleTaskCompletion(task)
-    }
-}
-
-extension TaskListViewController: TaskDetailViewToListDelegate {
-    func refreshCellAfterEdit(_ updatedTask: TaskObject) {
-        if let index = tasks.firstIndex(where: { $0.id == updatedTask.id }) {
-            tasks[index] = updatedTask
-            let indexPath = IndexPath(row: index, section: 0)
-            tableView.reloadRows(at: [indexPath], with: .automatic)
-        }
     }
 }
