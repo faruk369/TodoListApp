@@ -34,7 +34,6 @@
 		D3BF6EA12E429F0100458C73 /* TaskObject+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3BF6E9F2E429F0100458C73 /* TaskObject+CoreDataProperties.swift */; };
 		D3BF6EA32E429F2800458C73 /* TaskMapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3BF6EA22E429F2800458C73 /* TaskMapper.swift */; };
 		D3BF6EA52E42A06800458C73 /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3BF6EA42E42A06800458C73 /* CoreDataStack.swift */; };
-		D3BF6EA72E43F86A00458C73 /* TaskLocalDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3BF6EA62E43F86A00458C73 /* TaskLocalDataManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -85,7 +84,6 @@
 		D3BF6E9F2E429F0100458C73 /* TaskObject+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TaskObject+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		D3BF6EA22E429F2800458C73 /* TaskMapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskMapper.swift; sourceTree = "<group>"; };
 		D3BF6EA42E42A06800458C73 /* CoreDataStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
-		D3BF6EA62E43F86A00458C73 /* TaskLocalDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskLocalDataManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -145,7 +143,6 @@
 				D3BF6E662E3CDDD000458C73 /* Resources */,
 				D3BF6E322E3CC5CD00458C73 /* Info.plist */,
 				D3BF6EA22E429F2800458C73 /* TaskMapper.swift */,
-				D3BF6EA62E43F86A00458C73 /* TaskLocalDataManager.swift */,
 			);
 			path = TodoListApp;
 			sourceTree = "<group>";
@@ -403,7 +400,6 @@
 				D3BF6E702E3CE20300458C73 /* TaskListPresenter.swift in Sources */,
 				D3BF6E6C2E3CDF7200458C73 /* TaskListView+Constraints.swift in Sources */,
 				D3BF6E782E3F923F00458C73 /* TaskTableViewCell.swift in Sources */,
-				D3BF6EA72E43F86A00458C73 /* TaskLocalDataManager.swift in Sources */,
 				D3BF6EA32E429F2800458C73 /* TaskMapper.swift in Sources */,
 				D3BF6E7E2E3FBEE100458C73 /* TaskDetailInteractor.swift in Sources */,
 				D3BF6EA02E429F0100458C73 /* TaskObject+CoreDataClass.swift in Sources */,

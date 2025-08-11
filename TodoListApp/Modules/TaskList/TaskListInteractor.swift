@@ -19,8 +19,8 @@ class TaskListInteractor: TaskListInteractorInputProtocol {
         // Then fetch from API
         APIManager.shared.fetchTasks { [weak self] result in
             switch result {
-            case .success(let remoteTasks):
-                self?.syncTasks(remoteTasks)
+            case .success(_):
+                self?.fetchTasks()
             case .failure:
                 // Don't show error if we have local tasks
                 break
@@ -68,57 +68,13 @@ class TaskListInteractor: TaskListInteractorInputProtocol {
     
     // Update syncTasks method to prevent duplicates
     private func syncTasks(_ remoteTasks: [TaskEntity]) {
-        let context = CoreDataStack.shared.context
-        context.perform {
-            // Remove duplicates first
-            self.removeDuplicates()
-            
-            // Existing sync logic
-            let localTasks = self.fetchLocalTasks()
-            let localTaskDict = Dictionary(uniqueKeysWithValues: localTasks.map { (Int($0.id), $0) })
-            
-            for remoteTask in remoteTasks {
-                let taskId = remoteTask.id
-                
-                if let existingTask = localTaskDict[taskId] {
-                    if !existingTask.isEditedLocally {
-                        existingTask.name = remoteTask.name
-                        existingTask.isCompleted = remoteTask.isCompleted
-                    }
-                } else {
-                    let newTask = TaskObject(context: context)
-                    newTask.id = Int64(remoteTask.id)
-                    newTask.name = remoteTask.name
-                    newTask.isCompleted = remoteTask.isCompleted
-                    newTask.dateCreated = Date()
-                    newTask.isEditedLocally = false
-                }
-            }
-            
-            // Save changes
-            do {
-                try context.save()
-                let updatedTasks = self.fetchLocalTasks()
-                DispatchQueue.main.async {
-                    self.presenter?.didFetchTasks(updatedTasks)
-                }
-            } catch {
-                print("Sync failed: \(error)")
-            }
-        }
+ 
     }
-    
-  
 
     func updateExistingTask(from entity: TaskObject) {
         CoreDataStack.shared.saveContext()
     }
-
-    func updateTaskCompletion(_ task: TaskObject) {
-        task.isCompleted.toggle()
-//        updateExistingTask(taskob)
-    }
-
+    
     func deleteTask(_ task: TaskObject) {
         let context = CoreDataStack.shared.context
         context.delete(task)

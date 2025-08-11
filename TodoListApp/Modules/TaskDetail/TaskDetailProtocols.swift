@@ -23,6 +23,7 @@ protocol TaskDetailPresenterProtocol: AnyObject {
     func viewDidLoad()
     func didTapSave(title: String, description: String)
     func handleViewWillDisappear()
+    
 }
 
 protocol TaskDetailInteractorInputProtocol: AnyObject {
@@ -43,6 +44,4 @@ protocol TaskDetailRouterProtocol: AnyObject {
     func dismiss(view: TaskDetailViewProtocol?)
 }
 
-//protocol TaskDetailViewToListDelegate: AnyObject {
-//    func refreshCellAfterEdit(_ updatedTask: TaskObject)
-//}
+

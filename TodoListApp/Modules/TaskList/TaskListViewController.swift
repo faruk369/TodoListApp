@@ -29,7 +29,6 @@ class TaskListViewController: UIViewController, TaskListViewProtocol {
         setUpTableView()
         setupBottomBar()
         setUpConstraints()
-//        presenter?.loadInitialTasks()
         if let localTasks = presenter?.interactor?.fetchLocalTasks(), !localTasks.isEmpty {
                 displayTasks(localTasks)
             }
@@ -59,13 +58,6 @@ class TaskListViewController: UIViewController, TaskListViewProtocol {
         applySearchFilter() // This updates filteredTasks
         tableView.reloadData()
     }
-
-//    func insertTask(_ task: TaskObject, at index: Int) {
-//        tasks.insert(task, at: 0)
-//        applySearchFilter() // This updates filteredTasks
-//        tableView.reloadData()
-//        taskCountLabel.text = "\(tasks.count) задач"
-//    }
     
     func insertTask(_ task: TaskObject, at index: Int) {
         // Add to main tasks array
@@ -105,13 +97,32 @@ extension TaskListViewController: UITableViewDelegate, UITableViewDataSource {
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "TaskCell", for: indexPath) as? TaskTableViewCell else {
-            return UITableViewCell()
-        }
+        let cell = tableView.dequeueReusableCell(withIdentifier: "TaskCell", for: indexPath) as! TaskTableViewCell
         let task = filteredTasks[indexPath.row]
-        cell.configure(with: task)
-        cell.delegate = self
-        return cell
+           cell.configure(with: task)
+           
+        cell.toggleCompletionHandler = { [weak self] task in
+            guard let self = self else { return }
+            
+            task.isCompleted.toggle()
+            
+            // Save Core Data context
+            do {
+                try CoreDataStack.shared.context.save()
+            } catch {
+                print("Failed to save context: \(error)")
+            }
+            
+            // Reload table (or reload just affected row)
+            if let index = self.tasks.firstIndex(where: { $0.id == task.id }) {
+                let indexPath = IndexPath(row: index, section: 0)
+                self.tableView.reloadRows(at: [indexPath], with: .automatic)
+            } else {
+                self.tableView.reloadData()
+            }
+        }
+           
+           return cell
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -216,8 +227,3 @@ extension TaskListViewController {
     }
 }
 
-extension TaskListViewController: TaskTableViewCellDelegate {
-    func didToggleCompletion(for task: TaskObject) {
-        presenter?.toggleTaskCompletion(task)
-    }
-}

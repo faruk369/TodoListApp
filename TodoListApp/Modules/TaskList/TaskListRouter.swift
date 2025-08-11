@@ -9,7 +9,7 @@ import UIKit
 import CoreData
 
 class TaskListRouter: TaskListRouterProtocol {
-    weak var presenter:TaskListPresenter?
+    var presenter:TaskListPresenter?
   
     
     static func createModule() -> UIViewController {
@@ -24,24 +24,12 @@ class TaskListRouter: TaskListRouterProtocol {
         return view
     }
 
-//    func navigateToDetail(from view: TaskListViewProtocol, with task: TaskObject?) {
-//        guard let sourceVC = view as? UIViewController else { return }
-//        
-//        let detailVC = TaskDetailRouter.createModule(with: task)
-//        
-//        
-//        if let detailVC = detailVC as? TaskDetailViewController,
-//               let presenter = (sourceVC as? TaskListViewController)?.presenter as? TaskDetailToTaskListDelegate {
-//                detailVC.presenter?.delegate = presenter
-//            }
-//        sourceVC.navigationController?.pushViewController(detailVC, animated: true)
-//    }
     func navigateToDetail(from view: TaskListViewProtocol, with task: TaskObject?) {
         guard let sourceVC = view as? UIViewController else { return }
         
         let detailVC = TaskDetailRouter.createModule(with: task)
         
-        // Proper delegate setup
+        
         if let detailVC = detailVC as? TaskDetailViewController,
            let taskListVC = sourceVC as? TaskListViewController {
             // Directly assign the presenter as delegate
@@ -97,4 +85,3 @@ class TaskListRouter: TaskListRouterProtocol {
         }
     }
 }
-

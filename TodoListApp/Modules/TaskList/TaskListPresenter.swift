@@ -21,19 +21,10 @@ class TaskListPresenter: TaskListPresenterProtocol, TaskListInteractorOutputProt
         self.router = router
     }
     
-    
     func fetchTasks() {
         interactor?.fetchTasks()
     }
-    
-    func toggleTaskCompletion(_ task: TaskObject) {
-        let updatedTask = task
-//        updatedTask.isCompleted.toggle()
-        interactor?.updateTaskCompletion(updatedTask)
-    }
-    
 
-    
     func didFetchTasks(_ tasks: [TaskObject]) {
         self.tasks = tasks
         view?.displayTasks(tasks)
