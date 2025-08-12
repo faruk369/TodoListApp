@@ -12,7 +12,7 @@ extension TaskListViewController{
         NSLayoutConstraint.activate([
             
             searchTextField.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            searchTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 8),
+            searchTextField.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 18),
             searchTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -8),
             searchTextField.heightAnchor.constraint(equalToConstant: 44),
 
@@ -43,13 +43,13 @@ extension TaskListViewController{
 extension TaskTableViewCell{
     func setupCellConstraints() {
         NSLayoutConstraint.activate([
-            completionButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
-            completionButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-            completionButton.widthAnchor.constraint(equalToConstant: 24),
-            completionButton.heightAnchor.constraint(equalToConstant: 24),
+//            completionButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
+//            completionButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+//            completionButton.widthAnchor.constraint(equalToConstant: 24),
+//            completionButton.heightAnchor.constraint(equalToConstant: 24),
 
             titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
-            titleLabel.leadingAnchor.constraint(equalTo: completionButton.trailingAnchor, constant: 12),
+            titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 18),
             titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12),
 
             descriptionLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 4),

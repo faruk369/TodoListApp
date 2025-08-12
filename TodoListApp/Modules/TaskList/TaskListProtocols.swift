@@ -19,6 +19,7 @@ protocol TaskListPresenterProtocol: AnyObject {
     func didLongPressDelete(at indexPath: IndexPath)
     func didTapAddNewTask()
     func taskWasUpdated(_ task: TaskObject)
+    func toggleTaskCompletion(_ task: TaskObject)
 }
 
 protocol TaskListViewProtocol: AnyObject {
@@ -51,4 +52,8 @@ protocol TaskListRouterProtocol: AnyObject {
 protocol TaskDetailToTaskListDelegate: AnyObject {
     func taskWasUpdated(_ task: TaskObject)
     func taskWasCreated(_ task: TaskObject)
+}
+
+protocol TaskTableViewCellDelegate: AnyObject {
+    func didToggleCompletion(for task: TaskObject)
 }

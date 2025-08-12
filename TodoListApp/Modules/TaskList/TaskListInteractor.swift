@@ -50,7 +50,7 @@ class TaskListInteractor: TaskListInteractorInputProtocol {
             var uniqueTasks = [Int64: TaskObject]()
             
             for task in allTasks {
-                if let existing = uniqueTasks[task.id] {
+                if uniqueTasks[task.id] != nil {
                     context.delete(task) // Delete duplicate
                 } else {
                     uniqueTasks[task.id] = task
@@ -72,7 +72,12 @@ class TaskListInteractor: TaskListInteractorInputProtocol {
     }
 
     func updateExistingTask(from entity: TaskObject) {
-        CoreDataStack.shared.saveContext()
+//        CoreDataStack.shared.saveContext()
+        do {
+                try entity.managedObjectContext?.save()
+            } catch {
+                print("Failed to save updated task: \(error)")
+            }
     }
     
     func deleteTask(_ task: TaskObject) {

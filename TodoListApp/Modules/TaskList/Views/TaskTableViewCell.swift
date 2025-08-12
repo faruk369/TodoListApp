@@ -8,12 +8,12 @@ import UIKit
 
 class TaskTableViewCell: UITableViewCell {
 
-    let completionButton = UIButton(type: .system)
+//    let completionButton = UIButton(type: .system)
     let titleLabel = UILabel()
     let descriptionLabel = UILabel()
     let dateLabel = UILabel()
     
-    var toggleCompletionHandler: ((TaskObject) -> Void)?
+    weak var delegate: TaskTableViewCellDelegate?
     private var currentTask: TaskObject?
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -26,12 +26,25 @@ class TaskTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        titleLabel.attributedText = nil
+        titleLabel.text = nil
+        descriptionLabel.text = nil
+        dateLabel.text = nil
+//        completionButton.setImage(UIImage(systemName: "circle"), for: .normal)
+        currentTask = nil
+    }
+    
+    
+    
     private func setupViews() {
-        completionButton.setTitleColor(.systemBlue, for: .normal)
-        completionButton.titleLabel?.font = UIFont.systemFont(ofSize: 24)
-        completionButton.translatesAutoresizingMaskIntoConstraints = false
-        completionButton.addTarget(self, action: #selector(completionButtonTapped), for: .touchUpInside)
-        contentView.addSubview(completionButton)
+        
+//        completionButton.setTitleColor(.systemBlue, for: .normal)
+//        completionButton.titleLabel?.font = UIFont.systemFont(ofSize: 24)
+//        completionButton.translatesAutoresizingMaskIntoConstraints = false
+//        completionButton.addTarget(self, action: #selector(completionButtonTapped), for: .touchUpInside)
+//        contentView.addSubview(completionButton)
 
         [titleLabel, descriptionLabel, dateLabel].forEach {
             $0.translatesAutoresizingMaskIntoConstraints = false
@@ -45,30 +58,16 @@ class TaskTableViewCell: UITableViewCell {
         dateLabel.textColor = .secondaryLabel
     }
     func configure(with task: TaskObject) {
-        currentTask = task
-        descriptionLabel.text = task.descriptionText ?? "No description"
-        dateLabel.text = format(date: task.dateCreated)
+         currentTask = task
+         titleLabel.text = task.name
+         descriptionLabel.text = task.descriptionText ?? "No description"
+         dateLabel.text = format(date: task.dateCreated)
 
-        updateCellUI(isCompleted: task.isCompleted)
-    }
+     }
 
-    private func updateCellUI(isCompleted: Bool) {
-        if isCompleted{
-            completionButton.setImage(UIImage(systemName: "checkmark.circle.fill"), for: .normal)
-            let attributed = NSMutableAttributedString(string: currentTask?.name ?? "")
-            attributed.addAttribute(.strikethroughStyle,
-                                    value: NSUnderlineStyle.single.rawValue,
-                                    range: NSRange(location: 0, length: attributed.length))
-            titleLabel.attributedText = attributed
-        } else{
-            completionButton.setImage(UIImage(systemName: "circle"), for: .normal)
-            titleLabel.attributedText = NSAttributedString(string: currentTask?.name ?? "")
-        }
-    }
-    
     @objc private func completionButtonTapped() {
         guard let task = currentTask else { return }
-        toggleCompletionHandler?(task)
+        delegate?.didToggleCompletion(for: task)
     }
 
     private func format(date: Date?) -> String {
@@ -78,3 +77,4 @@ class TaskTableViewCell: UITableViewCell {
         return formatter.string(from: date)
     }
 }
+

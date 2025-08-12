@@ -30,7 +30,17 @@ class TaskListPresenter: TaskListPresenterProtocol, TaskListInteractorOutputProt
         view?.displayTasks(tasks)
     }
     
-  
+    func toggleTaskCompletion(_ task: TaskObject) {
+        let updatedTask = task
+            updatedTask.isCompleted.toggle()
+            interactor?.updateExistingTask(from: updatedTask)
+            
+            // Also update the tasks array immediately so the UI reflects it without refetch
+            if let index = tasks.firstIndex(where: { $0.id == updatedTask.id }) {
+                tasks[index] = updatedTask
+                view?.updateTask(updatedTask, at: index)
+            }
+    }
         
         func didSelectTask(_ task: TaskObject) {
             router?.navigateToDetail(from: view!, with: task)
