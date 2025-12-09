@@ -2,18 +2,29 @@
 //  TaskListViewController.swift
 //  TodoListApp
 //
-//  Created by Faryk on 01.08.2025.
 //
 
 import UIKit
 import CoreData
 
-
 class TaskListViewController: UIViewController, TaskListViewProtocol {
+ 
+    
     var presenter: TaskListPresenterProtocol?
     var tasks: [TaskObject] = []
+    
     var filteredTasks: [TaskObject] = []
+    
     var isContextMenuActive = false
+    
+    
+    // This closure will be called when the completion button is tapped
+       var onCompletionToggle: ((IndexPath) -> Void)?
+
+       // Implement the onCompletionToggle closure
+       func onCompletionToggle(at indexPath: IndexPath) {
+           presenter?.toggleTaskCompletion(at: indexPath) // Call the presenter
+       }
     
     let tableView = UITableView()
     let searchTextField = UITextField()
@@ -25,14 +36,21 @@ class TaskListViewController: UIViewController, TaskListViewProtocol {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         title = "Задачи"
-        
         setupSearchBar()
         setUpTableView()
         setupBottomBar()
         setUpConstraints()
-        presenter?.fetchTasks()
+//        presenter?.fetchTasks()
     }
-    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        // Below ensures all fetch → present → display UI updates happen AFTER the tableView is in window. Don’t update the UI until viewDidAppear completes one layout cycle
+        
+        DispatchQueue.main.async {
+                self.presenter?.fetchTasks()
+            }
+    }
     
     func setUpTableView() {
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -50,29 +68,37 @@ class TaskListViewController: UIViewController, TaskListViewProtocol {
         }
         taskCountLabel.text = "\(tasks.count) задач"
     }
+
     
-    func updateTask(_ task: TaskObject, at index: Int) {
+    func updateTask(_ task: TaskObject, at indexPath: IndexPath) {
+        // Update the task in the main array (tasks)
         if let indexInTasks = tasks.firstIndex(where: { $0.id == task.id }) {
             tasks[indexInTasks] = task
         }
+
+        // Apply search filter (if you have one)
         applySearchFilter() // This updates filteredTasks
-        
+
+        // Reload the specific row at the given indexPath
         if !isContextMenuActive {
-            tableView.reloadData()
+            tableView.reloadRows(at: [indexPath], with: .automatic)
         }
     }
+
     
-    func insertTask(_ task: TaskObject, at index: Int) {
-        // Add to main tasks array
-        tasks.insert(task, at: 0)
-        
-        // Update filtered tasks
+    func insertTask(_ task: TaskObject, at indexPath: IndexPath) {
+        // Add to the main tasks array (insert at the given index)
+        tasks.insert(task, at: indexPath.row)
+
+        // Update filtered tasks (if you have a filter)
         applySearchFilter()
-        
-        // Insert row at top with animation
+
+        // Insert the new row at the given IndexPath
         tableView.performBatchUpdates({
-            tableView.insertRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
+            tableView.insertRows(at: [indexPath], with: .automatic)
         }, completion: nil)
+
+        // Update task count label
         taskCountLabel.text = "\(tasks.count) задач"
     }
     
@@ -102,19 +128,27 @@ extension TaskListViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "TaskCell", for: indexPath) as! TaskTableViewCell
         let task = filteredTasks[indexPath.row]
-        cell.configure(with: task)
+        
+        // Configure cell with closure
+        cell.configure(with: task) { [weak self] task in
+            guard let self = self else { return }
+            
+            // Get the correct indexPath from filteredTasks
+            guard let index = self.filteredTasks.firstIndex(where: { $0.id == task.id }) else { return }
+            let indexPath = IndexPath(row: index, section: 0)
+            
+            // Notify presenter to handle the toggle
+            self.presenter?.toggleTaskCompletion(at: indexPath)
+        }
         
         return cell
     }
-    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let task = filteredTasks[indexPath.row]
-        
-        presenter?.didSelectTask(task)
-    }
-    
-    
-    
+            tableView.deselectRow(at: indexPath, animated: true)
+            let task = filteredTasks[indexPath.row]
+            presenter?.didSelectTask(task)
+        }
+
     func handleEdit(at indexPath: IndexPath) {
         presenter?.didLongPressEdit(at: indexPath)
     }
@@ -134,7 +168,7 @@ extension TaskListViewController {
         
         let leftContainerView = UIView(frame: CGRect(x: 0, y: 0, width: 30, height: 20))
         let magnifyingImageView = UIImageView(image: UIImage(systemName: "magnifyingglass"))
-        magnifyingImageView.tintColor = .gray
+        magnifyingImageView.tintColor = .systemGray
         magnifyingImageView.contentMode = .scaleAspectFit
         magnifyingImageView.frame = CGRect(x: 8, y: 0, width: 20, height: 20)
         
@@ -144,7 +178,7 @@ extension TaskListViewController {
         
         let rightContainerView = UIView(frame: CGRect(x: 0, y: 0, width: 30, height: 20))
         let micImageView = UIImageView(image: UIImage(systemName: "mic"))
-        micImageView.tintColor = .gray
+        micImageView.tintColor = .systemGray
         micImageView.contentMode = .scaleAspectFit
         micImageView.frame = CGRect(x: 0, y: 0, width: 20, height: 20)
         
@@ -153,6 +187,10 @@ extension TaskListViewController {
         searchTextField.rightViewMode = .always
     }
     
+
+}
+
+extension TaskListViewController {
     @objc func searchTextChanged() {
         guard let text = searchTextField.text?.lowercased() else { return }
         if text.isEmpty {
@@ -163,10 +201,6 @@ extension TaskListViewController {
                 ($0.descriptionText ?? "").lowercased().contains(text)
             }
         }
-        if !isContextMenuActive {
-            tableView.reloadData()
-        }
-        
     }
 }
 
@@ -180,7 +214,7 @@ extension TaskListViewController {
         taskCountLabel.translatesAutoresizingMaskIntoConstraints = false
         
         pencilImageView.translatesAutoresizingMaskIntoConstraints = false
-        pencilImageView.tintColor = .gray
+        pencilImageView.tintColor = .systemGray
         pencilImageView.contentMode = .scaleAspectFit
         
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(editTapped))
@@ -197,11 +231,11 @@ extension TaskListViewController {
     }
 }
 
-extension TaskListViewController: TaskTableViewCellDelegate {
-    func didToggleCompletion(for task: TaskObject) {
-        presenter?.toggleTaskCompletion(task)
-    }
-}
+//extension TaskListViewController: TaskTableViewCellDelegate {
+//    func didToggleCompletion(for task: TaskObject) {
+//        presenter?.toggleTaskCompletion(task)
+//    }
+//}
 
 // MARK: - Context Menu Long Press and Preview
 

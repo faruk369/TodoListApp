@@ -2,7 +2,6 @@
 //  TaskEntity.swift
 //  TodoListApp
 //
-//  Created by Faryk on 01.08.2025.
 //
 
 import Foundation

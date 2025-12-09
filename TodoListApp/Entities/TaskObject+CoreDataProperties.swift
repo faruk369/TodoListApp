@@ -2,7 +2,6 @@
 //  TaskObject+CoreDataProperties.swift
 //  TodoListApp
 //
-//  Created by Faryk on 05.08.2025.
 //
 //
 
@@ -21,7 +20,6 @@ extension TaskObject {
     @NSManaged public var descriptionText: String?
     @NSManaged public var isCompleted: Bool
     @NSManaged public var dateCreated: Date?
-    @NSManaged public var isEditedLocally: Bool
 
 }
 

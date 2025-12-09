@@ -2,7 +2,6 @@
 //  TaskListProtocols.swift
 //  TodoListApp
 //
-//  Created by Faryk on 01.08.2025.
 //
 
 import Foundation
@@ -19,14 +18,14 @@ protocol TaskListPresenterProtocol: AnyObject {
     func didLongPressDelete(at indexPath: IndexPath)
     func didTapAddNewTask()
     func taskWasUpdated(_ task: TaskObject)
-    func toggleTaskCompletion(_ task: TaskObject)
+    func toggleTaskCompletion(at indexPath: IndexPath)
 }
 
 protocol TaskListViewProtocol: AnyObject {
     var presenter: TaskListPresenterProtocol? { get set }
     func displayTasks(_ tasks: [TaskObject])
-    func updateTask(_ task: TaskObject, at index: Int)
-    func insertTask(_ task: TaskObject, at index: Int)
+    func updateTask(_ task: TaskObject, at indexPath: IndexPath)
+    func insertTask(_ task: TaskObject, at indexPath: IndexPath)
 }
 
 protocol TaskListInteractorInputProtocol: AnyObject {
@@ -40,7 +39,6 @@ protocol TaskListInteractorInputProtocol: AnyObject {
 
 protocol TaskListInteractorOutputProtocol: AnyObject {
     func didFetchTasks(_ tasks: [TaskObject])
-    
 }
 
 protocol TaskListRouterProtocol: AnyObject {
@@ -52,8 +50,4 @@ protocol TaskListRouterProtocol: AnyObject {
 protocol TaskDetailToTaskListDelegate: AnyObject {
     func taskWasUpdated(_ task: TaskObject)
     func taskWasCreated(_ task: TaskObject)
-}
-
-protocol TaskTableViewCellDelegate: AnyObject {
-    func didToggleCompletion(for task: TaskObject)
 }

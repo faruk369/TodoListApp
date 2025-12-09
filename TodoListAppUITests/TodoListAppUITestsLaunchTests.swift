@@ -2,7 +2,6 @@
 //  TodoListAppUITestsLaunchTests.swift
 //  TodoListAppUITests
 //
-//  Created by Faryk on 01.08.2025.
 //
 
 import XCTest

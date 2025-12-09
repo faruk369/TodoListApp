@@ -2,7 +2,6 @@
 //  TaskListView+Constraints.swift
 //  TodoListApp
 //
-//  Created by Faryk on 01.08.2025.
 //
 
 import UIKit
@@ -17,8 +16,8 @@ extension TaskListViewController{
             searchTextField.heightAnchor.constraint(equalToConstant: 44),
 
             
-            tableView.topAnchor.constraint(equalTo: searchTextField.bottomAnchor, constant: 8),
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 8),
+            tableView.topAnchor.constraint(equalTo: searchTextField.bottomAnchor, constant: 12),
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -8),
             tableView.bottomAnchor.constraint(equalTo: bottomBar.topAnchor),
 
@@ -43,22 +42,22 @@ extension TaskListViewController{
 extension TaskTableViewCell{
     func setupCellConstraints() {
         NSLayoutConstraint.activate([
-//            completionButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
-//            completionButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
-//            completionButton.widthAnchor.constraint(equalToConstant: 24),
-//            completionButton.heightAnchor.constraint(equalToConstant: 24),
+                        completionButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
+                        completionButton.centerYAnchor.constraint(equalTo: titleLabel.centerYAnchor),
+                        completionButton.widthAnchor.constraint(equalToConstant: 20),
+                        completionButton.heightAnchor.constraint(equalToConstant: 20),
 
-            titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
-            titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 18),
-            titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12),
+                        titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
+                        titleLabel.leadingAnchor.constraint(equalTo: completionButton.trailingAnchor, constant: 8),
+                        titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12),
 
-            descriptionLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 4),
-            descriptionLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
-            descriptionLabel.trailingAnchor.constraint(equalTo: titleLabel.trailingAnchor),
+                        descriptionLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 4),
+                        descriptionLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
+                        descriptionLabel.trailingAnchor.constraint(equalTo: titleLabel.trailingAnchor),
 
-            dateLabel.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 4),
-            dateLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
-            dateLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10)
+                        dateLabel.topAnchor.constraint(equalTo: descriptionLabel.bottomAnchor, constant: 4),
+                        dateLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
+                        dateLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -10)
         ])
     }
 }
@@ -71,7 +70,7 @@ extension TaskDetailViewController{
             titleTextField.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
 
             dateLabel.topAnchor.constraint(equalTo: titleTextField.bottomAnchor, constant: 4),
-            dateLabel.leadingAnchor.constraint(equalTo: titleTextField.leadingAnchor),
+            dateLabel.leadingAnchor.constraint(equalTo: titleTextField.leadingAnchor ),
             dateLabel.trailingAnchor.constraint(equalTo: titleTextField.trailingAnchor),
 
             descriptionTextView.topAnchor.constraint(equalTo: dateLabel.bottomAnchor, constant: 16),

@@ -2,7 +2,6 @@
 //  SceneDelegate.swift
 //  TodoListApp
 //
-//  Created by Faryk on 01.08.2025.
 //
 
 import UIKit
@@ -24,6 +23,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
            
                window.rootViewController = navController
                self.window = window
+               window.overrideUserInterfaceStyle = .dark 
                window.makeKeyAndVisible()
        }
 }

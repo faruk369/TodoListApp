@@ -2,7 +2,6 @@
 //  TaskDetailViewController.swift
 //  TodoListApp
 //
-//  Created by Faryk on 03.08.2025.
 //
 
 import UIKit
@@ -69,7 +68,7 @@ class TaskDetailViewController: UIViewController, TaskDetailViewProtocol {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
         dateLabel.text = "Created on: \(formatter.string(from: task.dateCreated!))"
-        dateLabel.textColor = .black
+        dateLabel.textColor = .label
     }
     
     // multiple tasks

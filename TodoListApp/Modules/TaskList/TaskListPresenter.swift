@@ -2,7 +2,6 @@
 //  TaskListPresenter.swift
 //  TodoListApp
 //
-//  Created by Faryk on 01.08.2025.
 //
 import UIKit
 import CoreData
@@ -24,54 +23,86 @@ class TaskListPresenter: TaskListPresenterProtocol, TaskListInteractorOutputProt
     func fetchTasks() {
         interactor?.fetchTasks()
     }
-
+    
     func didFetchTasks(_ tasks: [TaskObject]) {
         self.tasks = tasks
         view?.displayTasks(tasks)
     }
     
-    func toggleTaskCompletion(_ task: TaskObject) {
-        let updatedTask = task
-            updatedTask.isCompleted.toggle()
-            interactor?.updateExistingTask(from: updatedTask)
-            
-            // Also update the tasks array immediately so the UI reflects it without refetch
-            if let index = tasks.firstIndex(where: { $0.id == updatedTask.id }) {
-                tasks[index] = updatedTask
-                view?.updateTask(updatedTask, at: index)
-            }
+    func toggleTaskCompletion(at indexPath: IndexPath) {
+        guard indexPath.row < tasks.count else { return }
+        
+        // Get the task and toggle completion
+        let task = tasks[indexPath.row]
+        task.isCompleted.toggle()
+        
+        print("Toggling task \(task.id) to isCompleted: \(task.isCompleted)")
+        
+        // Update in CoreData
+        interactor?.updateExistingTask(from: task)
+        
+        // Update the task in our local array
+        tasks[indexPath.row] = task
+        
+        // Notify view to update UI
+        view?.updateTask(task, at: indexPath)
     }
-        
-        func didSelectTask(_ task: TaskObject) {
-            router?.navigateToDetail(from: view!, with: task)
-        }
-        
-        func didTapAddNewTask() {
-            router?.presentCreateTask(from: view! as! TaskListViewController)
-        }
-        
-        // 3d touch
-        func didLongPressEdit(at indexPath: IndexPath) {
-            let task = tasks[indexPath.row]
-            guard let view = view else { return }
-            router?.navigateToDetail(from: view, with: task)
-        }
-        
-        func didLongPressDelete(at indexPath: IndexPath) {
-            let task = tasks[indexPath.row]
-            interactor?.deleteTask(task)
-        }
-        // Implement delegate methods for the task to cell immediate update
-        func taskWasUpdated(_ task: TaskObject) {
-            if let index = tasks.firstIndex(where: { $0.id == task.id }) {
-                tasks[index] = task
-                view?.updateTask(task, at: index)
-            }
-        }
-        
-        func taskWasCreated(_ task: TaskObject) {
-            tasks.insert(task, at: 0)
-            view?.insertTask(task, at: 0)
-        }
-        
+    
+    func didSelectTask(_ task: TaskObject) {
+        router?.navigateToDetail(from: view!, with: task)
     }
+    
+    func didTapAddNewTask() {
+        router?.presentCreateTask(from: view! as! TaskListViewController)
+    }
+    
+    func didLongPressEdit(at indexPath: IndexPath) {
+        guard indexPath.row < tasks.count else { return }
+        let task = tasks[indexPath.row]
+        guard let view = view else { return }
+        router?.navigateToDetail(from: view, with: task)
+    }
+    
+    func didLongPressDelete(at indexPath: IndexPath) {
+        guard indexPath.row < tasks.count else { return }
+        let task = tasks[indexPath.row]
+        interactor?.deleteTask(task)
+    }
+    
+    func taskWasUpdated(_ task: TaskObject) {
+        // Find and update the task
+        if let index = tasks.firstIndex(where: { $0.id == task.id }) {
+            tasks[index] = task
+            let indexPath = IndexPath(row: index, section: 0)
+            view?.updateTask(task, at: indexPath)
+        }
+    }
+    
+    func taskWasCreated(_ task: TaskObject) {
+        // Insert at the beginning
+        tasks.insert(task, at: 0)
+        let indexPath = IndexPath(row: 0, section: 0)
+        view?.insertTask(task, at: indexPath)
+    }
+}
+//extension TaskListPresenter {
+//    func toggleTaskCompletion(at indexPath: IndexPath) {
+//        guard indexPath.row < tasks.count else { return }
+//        
+//        // Toggle the completion state of the task
+//        let updatedTask = tasks[indexPath.row]
+//        updatedTask.isCompleted.toggle()
+//        
+//        // Update in CoreData
+//        interactor?.updateExistingTask(from: updatedTask)
+//        
+//        // Update the task in the tasks array
+//        tasks[indexPath.row] = updatedTask
+//        
+//        // Generate the IndexPath for the updated task
+//        // (already have it as parameter)
+//        
+//        // Notify view to update UI
+//        view?.updateTask(updatedTask, at: indexPath)
+//    }
+//}

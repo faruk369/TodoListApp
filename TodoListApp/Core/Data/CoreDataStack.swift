@@ -2,7 +2,6 @@
 //  CoreDataStack.swift
 //  TodoListApp
 //
-//  Created by Faryk on 05.08.2025.
 //
 
 import Foundation
