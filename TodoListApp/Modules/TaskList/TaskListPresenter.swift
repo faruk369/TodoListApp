@@ -85,24 +85,3 @@ class TaskListPresenter: TaskListPresenterProtocol, TaskListInteractorOutputProt
         view?.insertTask(task, at: indexPath)
     }
 }
-//extension TaskListPresenter {
-//    func toggleTaskCompletion(at indexPath: IndexPath) {
-//        guard indexPath.row < tasks.count else { return }
-//        
-//        // Toggle the completion state of the task
-//        let updatedTask = tasks[indexPath.row]
-//        updatedTask.isCompleted.toggle()
-//        
-//        // Update in CoreData
-//        interactor?.updateExistingTask(from: updatedTask)
-//        
-//        // Update the task in the tasks array
-//        tasks[indexPath.row] = updatedTask
-//        
-//        // Generate the IndexPath for the updated task
-//        // (already have it as parameter)
-//        
-//        // Notify view to update UI
-//        view?.updateTask(updatedTask, at: indexPath)
-//    }
-//}

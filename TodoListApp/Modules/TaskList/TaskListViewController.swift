@@ -90,7 +90,7 @@ class TaskListViewController: UIViewController, TaskListViewProtocol {
         // Add to the main tasks array (insert at the given index)
         tasks.insert(task, at: indexPath.row)
 
-        // Update filtered tasks (if you have a filter)
+        // Update filtered tasks
         applySearchFilter()
 
         // Insert the new row at the given IndexPath

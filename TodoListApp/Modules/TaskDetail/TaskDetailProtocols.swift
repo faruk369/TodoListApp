@@ -9,7 +9,6 @@ import UIKit
 protocol TaskDetailViewProtocol: AnyObject {
     var presenter: TaskDetailPresenterProtocol? { get set }
     func showTaskDetails(_ task: TaskObject)
-//    func showTaskDetails(_ tasks: [TaskObject])
 }
 
 protocol TaskDetailPresenterProtocol: AnyObject {
@@ -27,11 +26,7 @@ protocol TaskDetailPresenterProtocol: AnyObject {
 
 protocol TaskDetailInteractorInputProtocol: AnyObject {
     func createTask(title: String, description: String)
-//func updateExistingTask(from entity: TaskObject)
-//    func updateExistingTask(_ task: TaskObject, title: String, description: String)
     func updateExistingTask(from entity: TaskObject)
-    
-    
 }
 
 protocol TaskDetailInteractorOutputProtocol: AnyObject{
